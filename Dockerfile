@@ -1,0 +1,14 @@
+# Build a static binary, then ship it on a tiny base.
+FROM golang:1.25-alpine AS build
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/hookrelay ./cmd/hookrelay
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /out/hookrelay /hookrelay
+EXPOSE 8080
+ENTRYPOINT ["/hookrelay"]
