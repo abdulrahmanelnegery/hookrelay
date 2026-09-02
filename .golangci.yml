@@ -1,0 +1,27 @@
+# Minimal golangci-lint config. The v2 defaults (errcheck, govet, ineffassign,
+# staticcheck, unused) plus a few readability linters. Nothing exotic.
+version: "2"
+
+linters:
+  enable:
+    - bodyclose
+    - misspell
+    - revive
+    - unconvert
+  settings:
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+
+  exclusions:
+    generated: lax
+    rules:
+      # Test helpers legitimately ignore errors on cleanup paths.
+      - path: _test\.go
+        linters:
+          - errcheck
+
+formatters:
+  enable:
+    - gofmt
